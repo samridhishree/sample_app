@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 
-describe "Static pages" do
+describe "User pages" do
   subject { page }
 
   shared_examples_for "all static pages" do
