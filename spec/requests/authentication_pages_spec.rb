@@ -38,9 +38,11 @@ describe "Authentication" do
       it { should have_link('Sign out',    href: signout_path) }
       it { should_not have_link('Sign in', href: signin_path) }
 
-      describe "followed by signout" do
+      describe "followed by signout - should not have particular links" do
       	before { click_link "Sign out" }
       	it { should have_link("Sign in") }
+        it { should_not have_link('Profile') }
+        it { should_not have_link('Settings') }
       end
     end
   end
@@ -60,6 +62,19 @@ describe "Authentication" do
 
         describe "it should come back to edit page" do
           it { should have_title("Edit User") }
+        end
+
+        describe "when signing in again" do
+          before do
+            delete signout_path
+            visit signin_path
+            fill_in "Email",    with: user.email
+            fill_in "Password", with: user.password
+            click_button "Sign in"
+          end
+          it "should render the default page" do
+            expect(page).to have_title(user.name)
+          end
         end
       end
 
@@ -106,6 +121,17 @@ describe "Authentication" do
       describe "submitting a DELETE request to the Users#destroy action" do
         before { delete user_path(user) }
         specify { expect(response).to redirect_to(root_path) }
+      end
+    end
+
+    describe "as an admin user" do
+      let(:admin) { FactoryGirl.create(:admin) }
+      before do
+       signin_path admin, no_capybara: true
+      end
+
+      it "should not be able to delete itself " do
+        expect { delete user_path(admin) }.not_to change(User, :count)
       end
     end
   end

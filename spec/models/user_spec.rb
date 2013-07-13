@@ -25,7 +25,7 @@ describe User do
     before do
       @user.save!
       @user.toggle!(:admin)
-    end
+    endi
 
     it { should be_admin }
   end
